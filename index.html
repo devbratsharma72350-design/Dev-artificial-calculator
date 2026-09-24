@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dev Artificial Calculator</title>
+
+<style>
+
+/* =========================
+   BASIC
+========================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #020817;
+    color: white;
+}
+
+
+/* =========================
+   SPLASH SCREEN
+========================= */
+
+#splash {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    background:
+        radial-gradient(circle at center,
+        #08285c 0%,
+        #03132d 45%,
+        #020817 75%,
+        #000 100%);
+}
+
+
+/* Splash Logo */
+
+.logo-area {
+    width: 220px;
+    height: 220px;
+
+    position: relative;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 45px;
+
+    border: 3px solid #00bfff;
+
+    background:
+        radial-gradient(circle,
+        #092d63,
+        #020817 70%);
+
+    box-shadow:
+        0 0 15px #00aaff,
+        0 0 35px #0066ff,
+        inset 0 0 30px #003cff;
+
+    animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        box-shadow:
+            0 0 12px #00aaff,
+            0 0 25px #0066ff;
+    }
+
+    to {
+        box-shadow:
+            0 0 25px #00d9ff,
+            0 0 55px #0066ff;
+    }
+}
+
+
+/* Mini Calculator Logo */
+
+.calculator-icon {
+    position: absolute;
+
+    top: 28px;
+
+    width: 130px;
+    height: 115px;
+
+    border-radius: 18px;
+
+    background: linear-gradient(
+        145deg,
+        #183e72,
+        #07162e
+    );
+
+    border: 3px solid #178cff;
+
+    transform: rotate(-7deg);
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,0.6);
+}
+
+.calc-display {
+    position: absolute;
+
+    left: 13px;
+    right: 13px;
+    top: 12px;
+
+    height: 28px;
+
+    border-radius: 7px;
+
+    background: #55d8ff;
+
+    color: #00111e;
+
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    padding-right: 8px;
+
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.calc-buttons {
+    position: absolute;
+
+    left: 13px;
+    right: 13px;
+    bottom: 12px;
+
+    display: grid;
+
+    grid-template-columns: repeat(3,1fr);
+
+    gap: 5px;
+}
+
+.calc-buttons span {
+    height: 20px;
+
+    border-radius: 5px;
+
+    background: #243957;
+
+    border: 1px solid #506987;
+}
+
+.calc-buttons span:last-child {
+    background: #ff9800;
+}
+
+
+/* DEV */
+
+.dev-logo {
+    position: absolute;
+
+    bottom: 25px;
+
+    font-size: 62px;
+
+    font-weight: 900;
+
+    font-style: italic;
+
+    letter-spacing: -8px;
+
+    color: white;
+
+    text-shadow:
+        3px 3px 0 #006cff,
+        0 0 15px #008cff;
+}
+
+.dev-logo span {
+    color: #087cff;
+}
+
+
+/* Splash Text */
+
+.brand-name {
+    margin-top: 25px;
+
+    font-size: 27px;
+
+    font-weight: bold;
+}
+
+.brand-name .blue {
+    color: #00bfff;
+}
+
+.software {
+    margin-top: 5px;
+
+    font-size: 16px;
+
+    letter-spacing: 6px;
+}
+
+.tagline {
+    margin-top: 25px;
+
+    font-size: 14px;
+
+    color: #a8b5c7;
+}
+
+
+/* Loading */
+
+.loader {
+    width: 55px;
+    height: 55px;
+
+    border-radius: 50%;
+
+    border: 5px solid #17365f;
+
+    border-top-color: #00c8ff;
+    border-right-color: #0066ff;
+
+    margin-top: 30px;
+
+    animation: loading 1s linear infinite;
+}
+
+@keyframes loading {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-text {
+    margin-top: 15px;
+
+    color: #cbd5e1;
+}
+
+
+/* =========================
+   CALCULATOR APP
+========================= */
+
+#calculator {
+    display: none;
+
+    min-height: 100vh;
+
+    padding: 15px;
+
+    flex-direction: column;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #061c3d,
+            #020817 55%
+        );
+}
+
+
+/* =========================
+   TOP APP HEADER
+========================= */
+
+.app-header {
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+
+    padding: 5px 0;
+}
+
+
+/* Logo */
+
+.app-logo {
+
+    width: 58px;
+    height: 58px;
+
+    flex-shrink: 0;
+
+    border-radius: 16px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    position: relative;
+
+    background:
+        linear-gradient(
+            145deg,
+            #0b326b,
+            #020817
+        );
+
+    border: 2px solid #008cff;
+
+    box-shadow:
+        0 0 12px #006cff,
+        inset 0 0 15px #003cff;
+}
+
+
+/* Small calculator inside logo */
+
+.app-logo::before {
+
+    content: "▣";
+
+    font-size: 30px;
+
+    color: #00c8ff;
+
+    text-shadow:
+        0 0 8px #008cff;
+
+}
+
+
+/* DEV letters */
+
+.app-logo::after {
+
+    content: "DEV";
+
+    position: absolute;
+
+    bottom: 2px;
+
+    right: 3px;
+
+    font-size: 13px;
+
+    font-weight: 900;
+
+    font-style: italic;
+
+    color: white;
+
+    text-shadow:
+        1px 1px 0 #006cff;
+
+}
+
+
+/* Header text */
+
+.app-info {
+
+    flex: 1;
+
+    margin-left: 12px;
+
+    overflow: hidden;
+}
+
+.app-title {
+
+    font-size: 21px;
+
+    font-weight: bold;
+
+    white-space: nowrap;
+}
+
+.app-title .blue {
+
+    color: #00bfff;
+}
+
+.app-subtitle {
+
+    margin-top: 5px;
+
+    font-size: 14px;
+
+    color: #e2e8f0;
+
+    white-space: nowrap;
+}
+
+
+/* Settings */
+
+.settings {
+
+    width: 48px;
+    height: 48px;
+
+    flex-shrink: 0;
+
+    border-radius: 14px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    font-size: 27px;
+
+    color: white;
+
+    background: transparent;
+
+    border: 1px solid transparent;
+
+    cursor: pointer;
+}
+
+.settings:active {
+
+    background: #172554;
+
+    transform: scale(0.92);
+}
+
+
+/* =========================
+   CALCULATOR BOX
+========================= */
+
+.calculator-box {
+
+    width: 100%;
+
+    max-width: 440px;
+
+    margin: auto;
+
+    background: rgba(8, 22, 43, 0.9);
+
+    padding: 18px;
+
+    border-radius: 25px;
+
+    border: 1px solid #244b80;
+
+    box-shadow:
+        0 0 30px rgba(0,100,255,0.25);
+}
+
+
+/* Display */
+
+.display {
+
+    width: 100%;
+
+    height: 125px;
+
+    background: #020817;
+
+    border: 2px solid #244b80;
+
+    border-radius: 20px;
+
+    padding: 15px;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    align-items: flex-end;
+
+    font-size: 42px;
+
+    overflow: hidden;
+
+    margin-bottom: 18px;
+
+    box-shadow:
+        inset 0 0 20px rgba(0,80,180,0.15);
+}
+
+
+/* Buttons */
+
+.buttons {
+
+    display: grid;
+
+    grid-template-columns: repeat(4,1fr);
+
+    gap: 11px;
+}
+
+button {
+
+    height: 64px;
+
+    border: none;
+
+    border-radius: 17px;
+
+    font-size: 22px;
+
+    font-weight: bold;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            145deg,
+            #243b5b,
+            #101f35
+        );
+
+    box-shadow:
+        0 4px 8px rgba(0,0,0,0.35);
+}
+
+button:active {
+
+    transform: scale(0.94);
+}
+
+.operator {
+
+    background:
+        linear-gradient(
+            145deg,
+            #087cf0,
+            #0051c7
+        );
+}
+
+.clear {
+
+    background:
+        linear-gradient(
+            145deg,
+            #e53935,
+            #a91414
+        );
+}
+
+.equal {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffb300,
+            #ef7800
+        );
+}
+
+.zero {
+
+    grid-column: span 2;
+}
+
+
+/* Footer */
+
+.footer {
+
+    text-align: center;
+
+    color: #64748b;
+
+    font-size: 12px;
+
+    margin-top: 15px;
+}
+
+
+/* =========================
+   SETTINGS POPUP
+========================= */
+
+#settingsBox {
+
+    display: none;
+
+    position: fixed;
+
+    top: 80px;
+
+    right: 15px;
+
+    width: 240px;
+
+    padding: 18px;
+
+    border-radius: 18px;
+
+    background: #0b1b34;
+
+    border: 1px solid #24538c;
+
+    box-shadow:
+        0 10px 35px rgba(0,0,0,0.6);
+
+    z-index: 100;
+}
+
+#settingsBox h3 {
+
+    margin-bottom: 10px;
+
+    color: #00bfff;
+}
+
+#settingsBox p {
+
+    font-size: 13px;
+
+    color: #cbd5e1;
+
+    line-height: 1.5;
+}
+
+.close-settings {
+
+    margin-top: 12px;
+
+    width: 100%;
+
+    height: 42px;
+
+    background: #172554;
+
+    border-radius: 10px;
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 380px) {
+
+    .app-title {
+        font-size: 18px;
+    }
+
+    .app-subtitle {
+        font-size: 12px;
+    }
+
+    .display {
+        height: 110px;
+        font-size: 36px;
+    }
+
+    button {
+        height: 58px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- ==================================================
+     SPLASH SCREEN
+================================================== -->
+
+<div id="splash">
+
+
+    <div class="logo-area">
+
+        <div class="calculator-icon">
+
+            <div class="calc-display">
+                0
+            </div>
+
+            <div class="calc-buttons">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </div>
+
+        </div>
+
+
+        <div class="dev-logo">
+            D<span>E</span>V
+        </div>
+
+    </div>
+
+
+    <div class="brand-name">
+
+        <span class="blue">DEV</span>
+        ARTIFICIAL
+
+    </div>
+
+
+    <div class="software">
+        SOFTWARE
+    </div>
+
+
+    <div class="tagline">
+        Smart Tools | Better Tomorrow
+    </div>
+
+
+    <div class="loader"></div>
+
+
+    <div class="loading-text">
+        Loading...
+    </div>
+
+</div>
+
+
+
+<!-- ==================================================
+     CALCULATOR
+================================================== -->
+
+<div id="calculator">
+
+
+    <!-- TOP HEADER -->
+
+    <div class="app-header">
+
+
+        <!-- LOGO -->
+
+        <div class="app-logo"></div>
+
+
+        <!-- APP NAME -->
+
+        <div class="app-info">
+
+            <div class="app-title">
+
+                <span class="blue">
+                    Dev Artificial
+                </span>
+
+                Calculator
+
+            </div>
+
+
+            <div class="app-subtitle">
+
+                By Dev Artificial Software
+
+            </div>
+
+        </div>
+
+
+        <!-- SETTINGS -->
+
+        <button
+            class="settings"
+            onclick="openSettings()">
+
+            ⚙️
+
+        </button>
+
+
+    </div>
+
+
+
+    <!-- CALCULATOR -->
+
+    <div class="calculator-box">
+
+
+        <div
+            class="display"
+            id="display">
+
+            0
+
+        </div>
+
+
+        <div class="buttons">
+
+
+            <button
+                class="clear"
+                onclick="clearDisplay()">
+
+                AC
+
+            </button>
+
+
+            <button
+                onclick="deleteLast()">
+
+                ⌫
+
+            </button>
+
+
+            <button
+                onclick="percentage()">
+
+                %
+
+            </button>
+
+
+            <button
+                class="operator"
+                onclick="addOperator('/')">
+
+                ÷
+
+            </button>
+
+
+
+            <button onclick="addNumber('7')">
+                7
+            </button>
+
+            <button onclick="addNumber('8')">
+                8
+            </button>
+
+            <button onclick="addNumber('9')">
+                9
+            </button>
+
+            <button
+                class="operator"
+                onclick="addOperator('*')">
+
+                ×
+
+            </button>
+
+
+
+            <button onclick="addNumber('4')">
+                4
+            </button>
+
+            <button onclick="addNumber('5')">
+                5
+            </button>
+
+            <button onclick="addNumber('6')">
+                6
+            </button>
+
+            <button
+                class="operator"
+                onclick="addOperator('-')">
+
+                −
+
+            </button>
+
+
+
+            <button onclick="addNumber('1')">
+                1
+            </button>
+
+            <button onclick="addNumber('2')">
+                2
+            </button>
+
+            <button onclick="addNumber('3')">
+                3
+            </button>
+
+            <button
+                class="operator"
+                onclick="addOperator('+')">
+
+                +
+
+            </button>
+
+
+
+            <button
+                class="zero"
+                onclick="addNumber('0')">
+
+                0
+
+            </button>
+
+            <button onclick="addNumber('.')">
+
+                .
+
+            </button>
+
+            <button
+                class="equal"
+                onclick="calculate()">
+
+                =
+
+            </button>
+
+
+        </div>
+
+
+        <div class="footer">
+
+            © 2026 Dev Artificial Software
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- SETTINGS BOX -->
+
+<div id="settingsBox">
+
+    <h3>
+        Dev Artificial Software
+    </h3>
+
+    <p>
+        Dev Artificial Calculator
+        <br><br>
+        Version 1.0
+        <br>
+        Smart Tools | Better Tomorrow
+    </p>
+
+    <button
+        class="close-settings"
+        onclick="closeSettings()">
+
+        Close
+
+    </button>
+
+</div>
+
+
+
+<script>
+
+/* =========================
+   SPLASH TIMER
+========================= */
+
+setTimeout(function() {
+
+    document.getElementById("splash")
+        .style.display = "none";
+
+    document.getElementById("calculator")
+        .style.display = "flex";
+
+}, 2500);
+
+
+
+/* =========================
+   CALCULATOR
+========================= */
+
+let expression = "";
+
+const display =
+    document.getElementById("display");
+
+
+function updateDisplay() {
+
+    if (expression === "") {
+
+        display.innerText = "0";
+
+    } else {
+
+        display.innerText =
+            expression;
+
+    }
+
+}
+
+
+function addNumber(number) {
+
+    expression += number;
+
+    updateDisplay();
+
+}
+
+
+function addOperator(operator) {
+
+    if (expression === "") {
+        return;
+    }
+
+    let last =
+        expression.slice(-1);
+
+    if ("+-*/".includes(last)) {
+
+        expression =
+            expression.slice(0,-1);
+
+    }
+
+    expression += operator;
+
+    updateDisplay();
+
+}
+
+
+function clearDisplay() {
+
+    expression = "";
+
+    updateDisplay();
+
+}
+
+
+function deleteLast() {
+
+    expression =
+        expression.slice(0,-1);
+
+    updateDisplay();
+
+}
+
+
+function percentage() {
+
+    if (expression === "") {
+        return;
+    }
+
+    try {
+
+        let result =
+            eval(expression);
+
+        result =
+            result / 100;
+
+        expression =
+            result.toString();
+
+        updateDisplay();
+
+    }
+
+    catch {
+
+        display.innerText =
+            "Error";
+
+        expression = "";
+
+    }
+
+}
+
+
+function calculate() {
+
+    if (expression === "") {
+        return;
+    }
+
+    try {
+
+        if (
+            !/^[0-9+\-*/.() ]+$/
+            .test(expression)
+        ) {
+
+            throw new Error();
+
+        }
+
+        let result =
+            eval(expression);
+
+        if (!Number.isFinite(result)) {
+
+            throw new Error();
+
+        }
+
+        expression =
+            result.toString();
+
+        updateDisplay();
+
+    }
+
+    catch {
+
+        display.innerText =
+            "Error";
+
+        expression = "";
+
+    }
+
+}
+
+
+/* =========================
+   SETTINGS
+========================= */
+
+function openSettings() {
+
+    document.getElementById(
+        "settingsBox"
+    ).style.display = "block";
+
+}
+
+
+function closeSettings() {
+
+    document.getElementById(
+        "settingsBox"
+    ).style.display = "none";
+
+}
+
+
+/* =========================
+   KEYBOARD
+========================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        let key = event.key;
+
+
+        if (
+            "0123456789."
+            .includes(key)
+        ) {
+
+            addNumber(key);
+
+        }
+
+        else if (
+            "+-*/"
+            .includes(key)
+        ) {
+
+            addOperator(key);
+
+        }
+
+        else if (
+            key === "Enter" ||
+            key === "="
+        ) {
+
+            calculate();
+
+        }
+
+        else if (
+            key === "Backspace"
+        ) {
+
+            deleteLast();
+
+        }
+
+        else if (
+            key === "Escape"
+        ) {
+
+            clearDisplay();
+
+        }
+
+        else if (key === "%") {
+
+            percentage();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
